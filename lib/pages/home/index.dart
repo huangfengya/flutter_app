@@ -1,19 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/common/icons.dart';
+import 'package:flutter_app/common/utils.dart';
 import 'package:flutter_app/components/circularProgress/index.dart';
 import 'package:flutter_app/pages/home/components/header/index.dart';
 
 var data = [
   {
-    "title": "2021.12.1",
-    "data": [
-      {"a": 12, "b": 13}
+    "date": "2021-12-01",
+    "values": [
+      {
+        "type": "add",
+        "value": 100.32,
+        "category": "工资",
+        "icon": "wallet_giftcard"
+      },
+      {
+        "type": "sub",
+        "value": 100.32,
+        "category": "餐饮",
+        "icon": "food_bank_outlined"
+      },
     ]
   },
   {
-    "type": "date",
-    "title": "2021.12.1",
-    "data": [
-      {"a": 12, "b": 13}
+    "date": "2023-12-01",
+    "values": [
+      {
+        "type": "sub",
+        "value": 10,
+        "category": "餐饮",
+        "icon": "food_bank_outlined"
+      },
+      {
+        "type": "sub",
+        "value": 999,
+        "category": "烟酒",
+        "icon": "all_inclusive_outlined"
+      },
+      {
+        "type": "sub",
+        "value": 1011,
+        "category": "其他",
+        "icon": "ssid_chart_outlined"
+      },
     ]
   }
 ];
@@ -71,23 +100,7 @@ class _Home extends State<Home> {
                 controller: scrollController,
                 slivers: <Widget>[
                   SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
-                        if (index.isEven) {
-                          return Container(
-                            color: Colors.grey[300],
-                            height: 40,
-                            alignment: Alignment.center,
-                            child: Text('Group ${index ~/ 2 + 1} Header'),
-                          );
-                        } else {
-                          return ListTile(
-                            title: Text('Item $index'),
-                          );
-                        }
-                      },
-                      childCount: 20,
-                    ),
+                    delegate: SliverChildListDelegate(scrollViewItem(data)),
                   ),
                 ],
               ),
@@ -97,6 +110,49 @@ class _Home extends State<Home> {
       ),
     );
   }
+}
+
+List<Widget> scrollViewItem(List<Map<String, dynamic>> data) {
+  List<Widget> items = [];
+  for (var item in data) {
+    Widget title = Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("${item["date"]} ${getDayofWeekFromDate(item["date"])}"),
+          Row(children: [
+            Offstage(
+              child: Text("收入：12313元"),
+              offstage: false,
+            ),
+            Offstage(
+              child: Text("支出：-34343元"),
+              offstage: false,
+            ),
+          ])
+        ],
+      ),
+    );
+    items.add(title);
+    for (var val in item["values"]) {
+      Widget detail = Container(
+        child: Row(
+          children: [
+            Row(
+              children: [
+                Icon(iconMapping[val["icon"]]),
+                Text(val["category"]),
+              ],
+            ),
+            Text("${val["type"] == "add" ? "+" : "-"} ${val["value"]}")
+          ],
+        ),
+      );
+      items.add(detail);
+    }
+  }
+
+  return items;
 }
 
 class MonthTotal extends StatelessWidget {
