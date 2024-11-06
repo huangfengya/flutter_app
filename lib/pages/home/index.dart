@@ -76,6 +76,7 @@ class _Home extends State<Home> {
   Widget build(BuildContext context) {
     return Container(
       height: double.maxFinite,
+      margin: const EdgeInsets.only(left: 15, right: 15),
       decoration: const BoxDecoration(
         gradient: RadialGradient(
           center: Alignment.topCenter,
@@ -94,7 +95,7 @@ class _Home extends State<Home> {
           children: [
             HomeHeader(),
             const MonthTotal(),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
             Expanded(
               child: CustomScrollView(
                 controller: scrollController,
@@ -114,19 +115,53 @@ class _Home extends State<Home> {
 
 List<Widget> scrollViewItem(List<Map<String, dynamic>> data) {
   List<Widget> items = [];
-  for (var item in data) {
+  const TextStyle titleStyle = TextStyle(
+    fontSize: 10,
+    color: Color(0xaa000000),
+  );
+  for (int i = 0; i < data.length; i++) {
+    var item = data[i];
     Widget title = Container(
+      height: 30,
+      padding: i == 0 ? null : const EdgeInsets.only(top: 10),
+      decoration: BoxDecoration(
+        border: i == 0
+            ? null
+            : Border(top: BorderSide(color: Colors.grey.shade400)),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("${item["date"]} ${getDayofWeekFromDate(item["date"])}"),
+          Row(
+            children: [
+              Text(
+                item["date"],
+                style: titleStyle,
+              ),
+              const SizedBox(width: 15),
+              Text(
+                getDayofWeekFromDate(item["date"]),
+                style: titleStyle,
+              )
+            ],
+          ),
           Row(children: [
             Offstage(
-              child: Text("收入：12313元"),
+              child: Text(
+                "收入：12313元",
+                style: titleStyle,
+              ),
               offstage: false,
             ),
             Offstage(
-              child: Text("支出：-34343元"),
+              child: SizedBox(width: 15),
+              offstage: false,
+            ),
+            Offstage(
+              child: Text(
+                "支出：-34343元",
+                style: titleStyle,
+              ),
               offstage: false,
             ),
           ])
@@ -134,17 +169,49 @@ List<Widget> scrollViewItem(List<Map<String, dynamic>> data) {
       ),
     );
     items.add(title);
-    for (var val in item["values"]) {
-      Widget detail = Container(
+    List<Map<String, dynamic>> values = item["values"];
+    for (int j = 0; j < values.length; j++) {
+      var val = values[j];
+      Widget detail = SizedBox(
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
+            Stack(
+              alignment: Alignment.center,
               children: [
-                Icon(iconMapping[val["icon"]]),
-                Text(val["category"]),
+                Container(
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.shade100,
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                  ),
+                ),
+                iconMapping[val["icon"]] as Widget,
               ],
             ),
-            Text("${val["type"] == "add" ? "+" : "-"} ${val["value"]}")
+            const SizedBox(
+              width: 15,
+            ),
+            Expanded(
+              child: Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  border: i != data.length - 1 && j == data.length - 1
+                      ? null
+                      : Border(
+                          bottom: BorderSide(color: Colors.grey.shade200),
+                        ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(val["category"]),
+                    Text("${val["type"] == "add" ? "+" : "-"} ${val["value"]}")
+                  ],
+                ),
+              ),
+            )
           ],
         ),
       );
@@ -161,7 +228,6 @@ class MonthTotal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 15, right: 15),
       padding: const EdgeInsets.all(15),
       decoration: const BoxDecoration(
           color: Colors.white,

@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
   @override
+  const HomeHeader({super.key});
+
+  @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(left: 15, right: 15),
+    return SizedBox(
       height: preferredSize.height,
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

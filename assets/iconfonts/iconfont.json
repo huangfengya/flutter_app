@@ -1,0 +1,37 @@
+{
+  "id": "4712274",
+  "name": "flutter",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "34452799",
+      "name": "charts-pie",
+      "font_class": "charts-pie",
+      "unicode": "e826",
+      "unicode_decimal": 59430
+    },
+    {
+      "icon_id": "34452812",
+      "name": "customer-center",
+      "font_class": "customer-center",
+      "unicode": "e827",
+      "unicode_decimal": 59431
+    },
+    {
+      "icon_id": "34452921",
+      "name": "money-wallet",
+      "font_class": "money-wallet",
+      "unicode": "e833",
+      "unicode_decimal": 59443
+    },
+    {
+      "icon_id": "34453006",
+      "name": "list",
+      "font_class": "list",
+      "unicode": "e83d",
+      "unicode_decimal": 59453
+    }
+  ]
+}
