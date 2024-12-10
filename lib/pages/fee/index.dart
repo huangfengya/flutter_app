@@ -8,7 +8,8 @@ EventBus eventBus = EventBus();
 
 class TransEvent {
   String text;
-  TransEvent(this.text);
+  String calcPrice;
+  TransEvent(this.text, this.calcPrice);
 }
 
 class SlideUpPageRoute<T> extends PageRoute<T> {
@@ -105,12 +106,14 @@ class InputData extends StatefulWidget {
 
 class _InputData extends State<InputData> {
   String fees = '';
+  String calcPrice = '';
 
   @override
   void initState() {
     eventBus.on<TransEvent>().listen((TransEvent data) {
       setState(() {
         fees = data.text;
+        calcPrice = data.calcPrice;
       });
     });
     super.initState();
@@ -132,35 +135,125 @@ class _InputData extends State<InputData> {
       child: Column(
         children: [
           Container(
-            height: 50,
+            padding: EdgeInsets.only(left: 10, right: 10),
+            height: 35,
             width: double.infinity,
             color: Colors.red.shade50,
-            child: Text(
-              fees,
-              style: const TextStyle(),
-              textAlign: TextAlign.right,
-            ),
+            child: ScrollableText(fees),
           ),
           Container(
-            height: 40,
-            width: double.infinity,
-            child: Row(
-              children: [
-                Text(
-                  "备注:",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade400,
+              padding: EdgeInsets.only(left: 10, right: 10),
+              height: 40,
+              width: double.infinity,
+              child: Flex(
+                direction: Axis.horizontal,
+                children: [
+                  GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      width: 80,
+                      height: double.maxFinite,
+                      child: Text(
+                        "添加备注",
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: TextField(
-                    minLines: 1,
-                    maxLines: 1,
-                  ),
-                ),
-              ],
-            ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      "this is price",
+                      style: TextStyle(fontSize: 22),
+                      textAlign: TextAlign.right,
+                    ),
+                  )
+                ],
+              )
+              // child: Flex(
+              //   direction: Axis.horizontal,
+              //   crossAxisAlignment: CrossAxisAlignment.center,
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     Text(
+              //       "备注:",
+              //       style: TextStyle(
+              //         fontSize: 15,
+              //         color: Colors.grey.shade400,
+              //       ),
+              //     ),
+              //     SizedBox(width: 10),
+              //     Expanded(
+              //       child: TextField(
+              //         onChanged: (value) {
+              //           print("$value");
+              //         },
+              //         decoration: InputDecoration(
+              //             isCollapsed: true,
+              //             hintStyle: TextStyle(fontSize: 15),
+              //             contentPadding: EdgeInsets.all(0)),
+              //         minLines: 1,
+              //         maxLines: 1,
+              //       ),
+              //     ),
+              //   ],
+              // ),
+              )
+        ],
+      ),
+    );
+  }
+}
+
+class ScrollableText extends StatefulWidget {
+  final String _text;
+  const ScrollableText(this._text, {super.key});
+
+  @override
+  State<StatefulWidget> createState() => _ScrollableText();
+}
+
+class _ScrollableText extends State<ScrollableText> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToRight());
+  }
+
+  @override
+  void didUpdateWidget(covariant ScrollableText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget._text != widget._text) {
+      _scrollToRight();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToRight() {
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(0);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      controller: _scrollController,
+      scrollDirection: Axis.horizontal,
+      reverse: true,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            widget._text,
+            style: TextStyle(fontSize: 16),
           )
         ],
       ),
@@ -195,7 +288,7 @@ class _CustomKeyboard extends State<CustomKeyboard> {
     List<List<String>> _child = [
       ['1', '2', '3', 'calendar'],
       ['4', '5', '6', 'add'],
-      ['7', '8', '9', 'remove'],
+      ['7', '8', '9', 'minus'],
       ['.', '0', 'backspace', 'done']
     ];
 
@@ -230,8 +323,6 @@ class KeyItem extends StatefulWidget {
   State<StatefulWidget> createState() => _KeyItem();
 }
 
-List<String> _inputData = [];
-
 class _KeyItem extends State<KeyItem> {
   Timer? _activeTimer;
   bool _activeStatus = false;
@@ -263,7 +354,7 @@ class _KeyItem extends State<KeyItem> {
       'done': Icons.done_all,
       'calendar': Icons.calendar_month_outlined,
       'add': Icons.add,
-      'remove': Icons.remove,
+      'minus': Icons.remove,
       'backspace': Icons.backspace
     };
     RegExp numberReg = RegExp(r'^\d|\.$');
@@ -292,14 +383,14 @@ class _KeyItem extends State<KeyItem> {
     }
 
     return GestureDetector(
-      onTapDown: (_) {
+      onPanDown: (_) {
         _activeTimer?.cancel();
         HapticFeedback.mediumImpact();
         setState(() {
           _activeStatus = true;
         });
       },
-      onTapUp: (_) {
+      onPanEnd: (_) {
         _activeTimer = Timer(const Duration(milliseconds: 100), () {
           setState(() {
             _activeStatus = false;
@@ -318,57 +409,96 @@ class _KeyItem extends State<KeyItem> {
       // 输入完成，应该关闭当前页面
     } else if (key == 'calendar') {
     } else if (key == 'backspace') {
-      if (last != null) {
-        String nLast = last.substring(0, last.length - 1);
-        if (nLast.isNotEmpty) {
-          modifyLastEle(nLast);
-        } else {
-          _inputData.removeLast();
-        }
-      }
-    } else if (key == 'add') {
-      if (last == '-' || last == '.') {
-        modifyLastEle('+');
-      } else if (last != null && last != '+') {
-        addEle('+');
-      }
-    } else if (key == 'remove') {
-      if (last == '+' || last == '.') {
-        modifyLastEle('-');
-      } else if (last != null && last != '-') {
-        addEle('-');
-      }
+      handleBackspace(last);
+    } else if (key == 'add' || key == 'minus') {
+      handleOperator(last, key);
     } else if (key == '.') {
-      if (last != null && !last.contains('.')) {
-        modifyLastEle('$last.');
-      }
+      handleDot(last);
     } else {
-      if (last == null || last == '-' || last == '+') {
-        _inputData.add(key);
-      } else {
-        // 这儿是数字哦
-        // 最多两位小数，最大值为 99999999.99
-        List<String> lastList = last.split('.');
-        String next = '$last$key';
-        if ((lastList[1].isEmpty || lastList[1].length < 2) &&
-            double.parse(next) < 1e8) {
-          modifyLastEle(next);
-        }
-      }
+      handleNumber(last, key);
     }
+
     print('input: $_inputData');
-    eventBus.fire(TransEvent(_inputData.join(" ")));
+    eventBus.fire(TransEvent(_inputData.join(" "), ""));
+  }
+}
+
+List<String> _inputData = [];
+RegExp lastIsNum = RegExp(r'\d$');
+RegExp lastIsDot = RegExp(r'\.$');
+RegExp lastIsOp = RegExp(r'^[+-]$');
+
+void handleInit() {
+  _inputData = [];
+}
+
+void handleBackspace(String? last) {
+  if (last == null) {
+    return;
   }
 
-  void addEle(String key) {
-    _inputData.add(key);
-  }
-
-  void modifyLastEle(String key) {
-    if (_inputData.isNotEmpty) {
-      _inputData[_inputData.length - 1] = key;
+  if (lastIsOp.hasMatch(last)) {
+    _inputData.removeLast();
+  } else if (lastIsDot.hasMatch(last) || lastIsNum.hasMatch(last)) {
+    String nlast = last.substring(0, last.length - 1);
+    if (nlast.isNotEmpty) {
+      _inputData.last = nlast;
     } else {
-      _inputData.add(key);
+      _inputData.removeLast();
+    }
+  }
+}
+
+void handleOperator(String? last, String key) {
+  if (last == null) {
+    return;
+  }
+
+  String operator = key == 'add' ? '+' : '-';
+  if (lastIsNum.hasMatch(last)) {
+    _inputData.add(operator);
+  } else if (lastIsDot.hasMatch(last)) {
+    _inputData.last = last.substring(0, last.length - 1);
+    _inputData.add(operator);
+  } else if (lastIsOp.hasMatch(last)) {
+    _inputData.last = operator;
+  }
+}
+
+void handleDot(String? last) {
+  if (last == null) {
+    return;
+  }
+
+  if (lastIsNum.hasMatch(last) && !last.contains('.')) {
+    _inputData.last = '$last.';
+  }
+}
+
+void handleNumber(String? last, String key) {
+  if (last == null) {
+    _inputData.add(key);
+    return;
+  }
+
+  if (lastIsOp.hasMatch(last)) {
+    _inputData.add(key);
+    return;
+  }
+
+  String nlast = '$last$key';
+  if (lastIsDot.hasMatch(last)) {
+    _inputData.last = nlast;
+  } else if (lastIsNum.hasMatch(last)) {
+    if (last == '0') {
+      _inputData.last = key;
+    } else {
+      List<String> lastList = nlast.split('.');
+      if (lastList.length == 2 && lastList[1].length <= 2) {
+        _inputData.last = nlast;
+      } else if (last.length < 7) {
+        _inputData.last = nlast;
+      }
     }
   }
 }
