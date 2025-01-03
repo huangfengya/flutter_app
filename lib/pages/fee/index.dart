@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/common/eventBus.dart';
 
+import "package:decimal/decimal.dart";
+
 EventBus eventBus = EventBus();
 
 class TransEvent {
@@ -51,7 +53,30 @@ class SlideUpPageRoute<T> extends PageRoute<T> {
   }
 }
 
-class Fee extends StatelessWidget {
+class Fee extends StatefulWidget {
+  const Fee({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _Fee();
+  }
+}
+
+class _Fee extends State<Fee> {
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    _focusNode = FocusNode();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _focusNode.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var _keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
@@ -78,15 +103,20 @@ class Fee extends StatelessWidget {
               ),
               if (_keyboardHeight > 0)
                 Positioned(
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    color: Colors.blueGrey,
-                  ),
                   left: 0,
                   top: 0,
+                  child: GestureDetector(
+                    onTap: () {
+                      FocusScope.of(context).unfocus();
+                    },
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      color: Colors.blueGrey,
+                    ),
+                  ),
                 ),
-              InputData(_keyboardHeight),
+              InputData(_keyboardHeight, _focusNode),
             ],
           ),
         ),
@@ -97,8 +127,9 @@ class Fee extends StatelessWidget {
 
 class InputData extends StatefulWidget {
   final double _keyboardHeight;
+  final FocusNode _focusNode;
 
-  const InputData(this._keyboardHeight, {super.key});
+  const InputData(this._keyboardHeight, this._focusNode, {super.key});
 
   @override
   State<StatefulWidget> createState() => _InputData();
@@ -130,7 +161,7 @@ class _InputData extends State<InputData> {
     bool isShowKeyboard = widget._keyboardHeight > 0;
     return Positioned(
       left: 0,
-      bottom: isShowKeyboard ? widget._keyboardHeight : 240,
+      bottom: isShowKeyboard ? widget._keyboardHeight : 230,
       right: 0,
       child: Column(
         children: [
@@ -142,62 +173,60 @@ class _InputData extends State<InputData> {
             child: ScrollableText(fees),
           ),
           Container(
-              padding: EdgeInsets.only(left: 10, right: 10),
-              height: 40,
-              width: double.infinity,
-              child: Flex(
-                direction: Axis.horizontal,
-                children: [
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      width: 80,
-                      height: double.maxFinite,
-                      child: Text(
-                        "添加备注",
+            padding: EdgeInsets.only(left: 10, right: 10),
+            width: double.infinity,
+            color: Colors.amberAccent,
+            child: Flex(
+              direction: Axis.horizontal,
+              children: [
+                Container(
+                  width: 190,
+                  child: Row(
+                    children: [
+                      Text(
+                        "备注",
                         style: TextStyle(fontSize: 15),
                       ),
-                    ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Expanded(
+                        // child: Text(
+                        //   "奥赛减法囧定了发空扥就阿塞阀阿塞阀安抚",
+                        //   overflow: TextOverflow.ellipsis,
+                        //   style: TextStyle(
+                        //       fontSize: 15, color: Colors.blueGrey.shade500),
+                        // ),
+                        child: Container(
+                          padding: EdgeInsets.zero,
+                          child: TextField(
+                            maxLines: 1,
+                            minLines: 1,
+                            focusNode: widget._focusNode,
+                            onChanged: (value) {
+                              print("value$value");
+                            },
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              isDense: true,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "this is price",
-                      style: TextStyle(fontSize: 22),
-                      textAlign: TextAlign.right,
-                    ),
-                  )
-                ],
-              )
-              // child: Flex(
-              //   direction: Axis.horizontal,
-              //   crossAxisAlignment: CrossAxisAlignment.center,
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     Text(
-              //       "备注:",
-              //       style: TextStyle(
-              //         fontSize: 15,
-              //         color: Colors.grey.shade400,
-              //       ),
-              //     ),
-              //     SizedBox(width: 10),
-              //     Expanded(
-              //       child: TextField(
-              //         onChanged: (value) {
-              //           print("$value");
-              //         },
-              //         decoration: InputDecoration(
-              //             isCollapsed: true,
-              //             hintStyle: TextStyle(fontSize: 15),
-              //             contentPadding: EdgeInsets.all(0)),
-              //         minLines: 1,
-              //         maxLines: 1,
-              //       ),
-              //     ),
-              //   ],
-              // ),
-              )
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    calcPrice,
+                    style: TextStyle(fontSize: 22),
+                    textAlign: TextAlign.right,
+                  ),
+                )
+              ],
+            ),
+          )
         ],
       ),
     );
@@ -418,8 +447,8 @@ class _KeyItem extends State<KeyItem> {
       handleNumber(last, key);
     }
 
-    print('input: $_inputData');
-    eventBus.fire(TransEvent(_inputData.join(" "), ""));
+    print('input: $_inputData;  total: ${calcTotalPrice()}');
+    eventBus.fire(TransEvent(_inputData.join(" "), calcTotalPrice()));
   }
 }
 
@@ -430,6 +459,24 @@ RegExp lastIsOp = RegExp(r'^[+-]$');
 
 void handleInit() {
   _inputData = [];
+}
+
+String calcTotalPrice() {
+  List<String> cpList = List.from(_inputData);
+  String? last = cpList.lastOrNull;
+  if (last != null && (last == '-' || last == '+')) {
+    cpList.removeLast();
+  }
+  Decimal total = Decimal.zero;
+  String op = "+";
+  for (String str in _inputData) {
+    if (str == "-" || str == "+") {
+      op = str;
+    } else {
+      total = total + Decimal.parse("$op$str");
+    }
+  }
+  return total.toString();
 }
 
 void handleBackspace(String? last) {
@@ -485,7 +532,6 @@ void handleNumber(String? last, String key) {
     _inputData.add(key);
     return;
   }
-
   String nlast = '$last$key';
   if (lastIsDot.hasMatch(last)) {
     _inputData.last = nlast;
@@ -494,9 +540,14 @@ void handleNumber(String? last, String key) {
       _inputData.last = key;
     } else {
       List<String> lastList = nlast.split('.');
-      if (lastList.length == 2 && lastList[1].length <= 2) {
-        _inputData.last = nlast;
-      } else if (last.length < 7) {
+      print(lastList.length);
+      if (lastList.length == 2) {
+        if (lastList[1].length <= 2) {
+          _inputData.last = nlast;
+        }
+        return;
+      }
+      if (last.length < 8) {
         _inputData.last = nlast;
       }
     }

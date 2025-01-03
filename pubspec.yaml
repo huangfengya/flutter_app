@@ -36,6 +36,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.0.10+1
+  decimal: 
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +69,22 @@ flutter:
     - assets/icons/duo_down.svg
     - assets/icons/duo_up.svg
     - assets/icons/catering.svg
+    - assets/icons/gouwu.svg
+    - assets/icons/shezhi.svg
+    - assets/icons/haizi.svg
+    - assets/icons/shouji.svg
+    - assets/icons/shuben.svg
+    - assets/icons/huanqiuyinshi.svg
+    - assets/icons/game.svg
+    - assets/icons/bianzu2.svg
+    - assets/icons/liwu.svg
+    - assets/icons/yanjiu.svg
+    - assets/icons/jiaren.svg
+    - assets/icons/shipin.svg
+    - assets/icons/jijiu.svg
+    - assets/icons/jiaotong.svg
+    - assets/icons/duo_down.svg
+    - assets/icons/duo_up.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -84,4 +101,3 @@ flutter:
     - family: iconfonts
       fonts:
         - asset: assets/iconfonts/iconfonts.ttf
-

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/pages/fee/index.dart';
 
@@ -8,7 +7,9 @@ import 'package:flutter_app/pages/my/index.dart';
 import 'package:flutter_app/pages/property/index.dart';
 import 'package:flutter_app/pages/report/index.dart';
 
-void main() => runApp(const FlutterApp());
+void main() {
+  runApp(const FlutterApp());
+}
 
 class BottomTab extends StatefulWidget {
   const BottomTab({super.key});

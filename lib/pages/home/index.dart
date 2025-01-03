@@ -11,7 +11,7 @@ var data = [
       {
         "type": "add",
         "value": 100.32,
-        "category": "工资",
+        "category": "工资2",
         "icon": "wallet_giftcard"
       },
       {
