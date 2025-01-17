@@ -32,7 +32,7 @@ final Widget doubleUpIcon = SvgPicture.asset(
   semanticsLabel: "双向上箭头",
 );
 
-// 通用
+// 消费
 final Widget catering = SvgPicture.asset(
   'assets/icons/catering.svg',
   semanticsLabel: "餐饮",
@@ -40,103 +40,47 @@ final Widget catering = SvgPicture.asset(
   height: 20,
 );
 
-final Widget shoppingIcon = SvgPicture.asset(
-  'assets/icons/gouwu.svg',
-  semanticsLabel: "购物",
-  width: 20,
-  height: 20,
-);
+final Widget shoppingIcon =
+    SvgPicture.asset('assets/icons/gouwu.svg', semanticsLabel: "购物");
 
-final Widget gameIcon = SvgPicture.asset(
-  'assets/icons/game.svg',
-  semanticsLabel: "游戏",
-  width: 20,
-  height: 20,
-);
+final Widget gameIcon =
+    SvgPicture.asset('assets/icons/game.svg', semanticsLabel: "游戏");
 
-final Widget settingIcon = SvgPicture.asset(
-  'assets/icons/shezhi.svg',
-  semanticsLabel: "设置",
-  width: 20,
-  height: 20,
-);
+final Widget settingIcon =
+    SvgPicture.asset('assets/icons/shezhi.svg', semanticsLabel: "设置");
 
-final Widget babyIcon = SvgPicture.asset(
-  'assets/icons/haizi.svg',
-  semanticsLabel: "幼儿",
-  width: 20,
-  height: 20,
-);
+final Widget babyIcon =
+    SvgPicture.asset('assets/icons/haizi.svg', semanticsLabel: "幼儿");
 
-final Widget phoneIcon = SvgPicture.asset(
-  'assets/icons/shouji.svg',
-  semanticsLabel: "话费",
-  width: 20,
-  height: 20,
-);
+final Widget phoneIcon =
+    SvgPicture.asset('assets/icons/shouji.svg', semanticsLabel: "话费");
 
-final Widget learnIcon = SvgPicture.asset(
-  'assets/icons/shuben.svg',
-  semanticsLabel: "学习",
-  width: 20,
-  height: 20,
-);
+final Widget learnIcon =
+    SvgPicture.asset('assets/icons/shuben.svg', semanticsLabel: "学习");
 
-final Widget foodIcon = SvgPicture.asset(
-  'assets/icons/huanqiuyinshi.svg',
-  semanticsLabel: "餐饮",
-  width: 20,
-  height: 20,
-);
+final Widget foodIcon =
+    SvgPicture.asset('assets/icons/huanqiuyinshi.svg', semanticsLabel: "餐饮");
 
-final Widget homeIcon = SvgPicture.asset(
-  'assets/icons/bianzu2.svg',
-  semanticsLabel: "房租",
-  width: 20,
-  height: 20,
-);
+final Widget homeIcon =
+    SvgPicture.asset('assets/icons/bianzu2.svg', semanticsLabel: "房租");
 
-final Widget jiaotongIcon = SvgPicture.asset(
-  'assets/icons/jiaotong.svg',
-  semanticsLabel: "交通",
-  width: 20,
-  height: 20,
-);
+final Widget jiaotongIcon =
+    SvgPicture.asset('assets/icons/jiaotong.svg', semanticsLabel: "交通");
 
-final Widget giftIcon = SvgPicture.asset(
-  'assets/icons/liwu.svg',
-  semanticsLabel: "礼物",
-  width: 20,
-  height: 20,
-);
+final Widget giftIcon =
+    SvgPicture.asset('assets/icons/liwu.svg', semanticsLabel: "礼物");
 
-final Widget yanjiuIcon = SvgPicture.asset(
-  'assets/icons/yanjiu.svg',
-  semanticsLabel: "烟酒",
-  width: 20,
-  height: 20,
-);
+final Widget yanjiuIcon =
+    SvgPicture.asset('assets/icons/yanjiu.svg', semanticsLabel: "烟酒");
 
-final Widget familyIcon = SvgPicture.asset(
-  'assets/icons/jiaren.svg',
-  semanticsLabel: "家庭",
-  width: 20,
-  height: 20,
-);
+final Widget familyIcon =
+    SvgPicture.asset('assets/icons/jiaren.svg', semanticsLabel: "家庭");
 
-final Widget videoIcon = SvgPicture.asset(
-  'assets/icons/shipin.svg',
-  semanticsLabel: "视频",
-  width: 20,
-  height: 20,
-);
+final Widget videoIcon =
+    SvgPicture.asset('assets/icons/shipin.svg', semanticsLabel: "视频");
 
-final Widget hospitalIcon = SvgPicture.asset(
-  'assets/icons/jijiu.svg',
-  semanticsLabel: "医疗",
-  width: 20,
-  height: 20,
-);
+final Widget hospitalIcon =
+    SvgPicture.asset('assets/icons/jijiu.svg', semanticsLabel: "医疗");
 
 // ----------- line ---------------------
 Map<String, Widget> iconMapping = {

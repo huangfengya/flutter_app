@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/components/sildeUpPageRoute/index.dart';
 import 'package:flutter_app/pages/fee/index.dart';
 
 import 'package:flutter_app/pages/home/index.dart';
 import 'package:flutter_app/pages/my/index.dart';
 import 'package:flutter_app/pages/property/index.dart';
 import 'package:flutter_app/pages/report/index.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(const FlutterApp());
@@ -103,6 +105,11 @@ class FlutterApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // debugPaintSizeEnabled = true;
     return const MaterialApp(
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+      ],
+      supportedLocales: [Locale('zh')],
       home: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
