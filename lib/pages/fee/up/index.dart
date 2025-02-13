@@ -46,7 +46,7 @@ class _UpScreen extends State<UpScreen> with SingleTickerProviderStateMixin {
     return Column(
       children: [
         Tabs(tabController: _tabController),
-        Container(
+        SizedBox(
           height: height,
           child: TabBarView(
             controller: _tabController,
@@ -62,10 +62,10 @@ class _UpScreen extends State<UpScreen> with SingleTickerProviderStateMixin {
 
   Widget _gridView(List<ConsumeIconItem> list) {
     return Container(
-      decoration: BoxDecoration(color: Colors.amber),
+      decoration: const BoxDecoration(color: Colors.amber),
       child: GridView.builder(
-        padding: EdgeInsets.only(left: 25, right: 25, top: 10),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        padding: const EdgeInsets.only(left: 25, right: 25, top: 10),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,
           childAspectRatio: 1,
         ),
@@ -86,7 +86,7 @@ class _UpScreen extends State<UpScreen> with SingleTickerProviderStateMixin {
           provider.modifySelectItem(index);
         },
         child: Container(
-          margin: EdgeInsets.all(10),
+          margin: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: provider.selectItem != index

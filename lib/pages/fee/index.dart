@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/sql/index.dart';
 
 import "package:provider/provider.dart";
 import 'package:flutter_app/pages/fee/feeProvider.dart';
@@ -12,8 +13,11 @@ class Fee extends StatelessWidget {
   Widget build(BuildContext context) {
     var _keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
-    return ChangeNotifierProvider(
-      create: (_) => FeeState(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => FeeState()),
+        ChangeNotifierProvider(create: (_) => DataBaseProvider())
+      ],
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.white,

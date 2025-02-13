@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class Tabs extends StatelessWidget {
   final TabController tabController;
@@ -16,20 +15,20 @@ class Tabs extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           Positioned(
+            left: 10,
             child: IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                // 返回按钮点击事件
+                Navigator.pop(context);
               },
             ),
-            left: 10,
           ),
           Center(
-            child: Container(
+            child: SizedBox(
               width: 250,
               child: TabBar(
                 controller: tabController,
-                indicator: UnderlineTabIndicator(
+                indicator: const UnderlineTabIndicator(
                   borderSide: BorderSide(color: Colors.red, width: 4),
                 ),
                 labelColor: Colors.white,
@@ -47,12 +46,12 @@ class Tabs extends StatelessWidget {
 
   Widget _tabItem(String title) {
     return Tab(
-      child: Container(
+      child: SizedBox(
         width: double.infinity,
         child: Text(
           title,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
         ),
       ),
     );

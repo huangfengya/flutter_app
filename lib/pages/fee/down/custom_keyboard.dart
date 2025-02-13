@@ -1,22 +1,38 @@
 import 'dart:async';
 
 import 'package:decimal/decimal.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/pages/fee/feeProvider.dart';
+import 'package:flutter_app/sql/index.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
-class CustomKeyboard extends StatelessWidget {
+class CustomKeyboard extends StatefulWidget {
   final double _keyboardHeight;
   const CustomKeyboard(this._keyboardHeight, {super.key});
 
   @override
+  State<StatefulWidget> createState() {
+    return _CustomKeyboard();
+  }
+}
+
+class _CustomKeyboard extends State<CustomKeyboard> {
+  @override
+  void initState() {
+    handleInit();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    bool isShowKeyboard = _keyboardHeight > 0;
+    bool isShowKeyboard = widget._keyboardHeight > 0;
 
     return Container(
         padding: EdgeInsets.only(
-          top: isShowKeyboard ? _keyboardHeight : 70,
+          top: isShowKeyboard ? widget._keyboardHeight : 70,
         ),
         height: 335,
         width: double.infinity,
@@ -100,7 +116,6 @@ class _KeyItem extends State<KeyItem> {
     RegExp numberReg = RegExp(r'^\d|\.$');
 
     Container container;
-
     if (numberReg.hasMatch(currKey)) {
       container = Container(
         height: double.infinity,
@@ -112,6 +127,29 @@ class _KeyItem extends State<KeyItem> {
           ),
         ),
       );
+    } else if (currKey == "calendar") {
+      FeeState provider = Provider.of<FeeState>(context);
+      DateTime? selectedDate = provider.selectedDate;
+      if (selectedDate == null) {
+        container = Container(
+          height: double.infinity,
+          decoration: boxDecoration,
+          child: Center(
+            child: Icon(iconMap[currKey]),
+          ),
+        );
+      } else {
+        container = Container(
+          height: double.infinity,
+          decoration: boxDecoration,
+          child: Center(
+            child: Text(
+              "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}",
+              style: TextStyle(fontSize: 10),
+            ),
+          ),
+        );
+      }
     } else {
       container = Container(
         height: double.infinity,
@@ -144,9 +182,46 @@ class _KeyItem extends State<KeyItem> {
 
   void panDown(BuildContext context, String key) {
     String? last = _inputData.lastOrNull;
+    FeeState provider = Provider.of<FeeState>(context, listen: false);
 
     // 键盘输入处理函数
     if (key == 'done') {
+      if (provider.calcPrice == '0') {
+        Navigator.pop(context);
+        return;
+      }
+      if (provider.selectItem < 0) {
+        showCupertinoDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return CupertinoAlertDialog(
+                content: const Text("尚未选择类型哦~"),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text("确定"),
+                  )
+                ],
+              );
+            });
+        return;
+      }
+      Provider.of<DataBaseProvider>(context, listen: false)
+          .addAccountItem(AccountItemsParams(
+        type: '${provider.feeType}',
+        notes: provider.notes,
+        dateTime: DateFormat('yyyy/MM/dd')
+            .format(provider.selectedDate ?? DateTime.now()),
+        price: provider.calcPrice,
+        subtype: '${provider.selectItem}',
+      ))
+          .then((_) {
+        print('add accountItems: success');
+        Navigator.pop(context);
+      }).catchError((error) {
+        print("add accountItems: error; reason: $error");
+      });
+      return;
       // 输入完成，应该关闭当前页面
     } else if (key == 'calendar') {
       _selectDate(context);
@@ -162,7 +237,7 @@ class _KeyItem extends State<KeyItem> {
     }
 
     print('input: $_inputData;  total: ${calcTotalPrice()}');
-    Provider.of<FeeState>(context, listen: false).modifyFees(
+    provider.modifyFees(
       _inputData,
       calcTotalPrice(),
     );

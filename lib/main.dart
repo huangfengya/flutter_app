@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/sql/index.dart';
+import 'package:flutter_app/sql/month.dart';
+import "package:provider/provider.dart";
+
 import 'package:flutter_app/components/sildeUpPageRoute/index.dart';
 import 'package:flutter_app/pages/fee/index.dart';
 
@@ -7,10 +11,38 @@ import 'package:flutter_app/pages/home/index.dart';
 import 'package:flutter_app/pages/my/index.dart';
 import 'package:flutter_app/pages/property/index.dart';
 import 'package:flutter_app/pages/report/index.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
-  runApp(const FlutterApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    FutureBuilder(
+      future: DataBaseProvider().initDatabase(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            print('has error');
+            // 后续改为弹窗
+            return MaterialApp(
+              home: Scaffold(
+                body: Center(
+                  child:
+                      Text('Database initialization error: ${snapshot.error}'),
+                ),
+              ),
+            );
+          }
+          return const FlutterApp();
+        }
+        print('wating');
+        // 后续改为开屏页面
+        return MaterialApp(
+          home: Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          ),
+        );
+      },
+    ),
+  );
 }
 
 class BottomTab extends StatefulWidget {
@@ -26,7 +58,9 @@ class _BottomTab extends State<BottomTab> {
   void _showFee() {
     Navigator.push(
       context,
-      SlideUpPageRoute(builder: (context) => Fee()),
+      SlideUpPageRoute(
+        builder: (context) => Fee(),
+      ),
     );
   }
 
@@ -60,7 +94,13 @@ class _BottomTab extends State<BottomTab> {
           ],
         ),
       ),
-      body: pages[_selectedIndex],
+      body: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => DataBaseProvider()),
+          ChangeNotifierProvider(create: (_) => MonthProvider())
+        ],
+        child: pages[_selectedIndex],
+      ),
     );
   }
 
@@ -105,11 +145,6 @@ class FlutterApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // debugPaintSizeEnabled = true;
     return const MaterialApp(
-      localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-      ],
-      supportedLocales: [Locale('zh')],
       home: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,

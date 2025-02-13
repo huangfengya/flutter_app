@@ -3,6 +3,9 @@ import 'package:flutter_app/common/icons.dart';
 import 'package:flutter_app/common/utils.dart';
 import 'package:flutter_app/components/circularProgress/index.dart';
 import 'package:flutter_app/pages/home/components/header/index.dart';
+import 'package:flutter_app/sql/index.dart';
+import 'package:flutter_app/sql/month.dart';
+import 'package:provider/provider.dart';
 
 var data = [
   {
@@ -80,7 +83,7 @@ class _Home extends State<Home> {
       decoration: const BoxDecoration(
         gradient: RadialGradient(
           center: Alignment.topCenter,
-          radius: 0.5,
+          radius: 0.8,
           stops: [0, 0.6, 0.8, 1],
           colors: [
             Color(0xFFFFF4C9),
@@ -93,7 +96,7 @@ class _Home extends State<Home> {
       child: SafeArea(
         child: Column(
           children: [
-            HomeHeader(),
+            const HomeHeader(),
             const MonthTotal(),
             const SizedBox(height: 15),
             Expanded(
@@ -147,10 +150,18 @@ List<Widget> scrollViewItem(List<Map<String, dynamic>> data) {
           ),
           Row(children: [
             Offstage(
-              child: Text(
-                "收入：12313元",
-                style: titleStyle,
-              ),
+              // child: Text(
+              //   "收入：12313元",
+              //   style: titleStyle,
+              // ),
+              child: Consumer<DataBaseProvider>(
+                  builder: (context, provider, child) {
+                var list = provider.accountItems;
+                return Text(
+                  "收入：12313元",
+                  style: titleStyle,
+                );
+              }),
               offstage: false,
             ),
             Offstage(
@@ -246,21 +257,28 @@ class MonthTotal extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "10月份支出",
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                  Text(
-                    '0.0',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Consumer<MonthProvider>(builder: (context, provider, child) {
+                    return Text(
+                      '${provider.currMonth}月份支出',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    );
+                  }),
+                  Consumer<DataBaseProvider>(
+                      builder: (context, provider, child) {
+                    var item = provider.accountItems;
+                    print(List.generate(item.length, (i) => item[i].toMap()));
+                    return Text(
+                      '0.0',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  })
                 ],
               ),
               Stack(
